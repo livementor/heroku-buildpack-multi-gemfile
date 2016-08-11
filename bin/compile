@@ -1,0 +1,33 @@
+#!/bin/sh
+
+build_dir=$1
+env_dir=$3
+
+safe_link() {
+  source=$1
+  target=$2
+  source_realpath=$(readlink -f $source)
+  target_realpath=$(readlink -f $target)
+
+  if [ $source_realpath != $target_realpath ]; then
+    echo "       Making $target a link to $source"
+    ln -f -s $source_realpath $target
+  else
+    echo "       Info: $target and $source are already linked"
+  fi
+}
+
+var_file=$env_dir/BUNDLE_GEMFILE
+
+if [ -s $var_file ]; then
+  echo "-----> BUNDLE_GEMFILE is present"
+
+  gemfile=$(cat $var_file)
+
+  cd $build_dir
+
+  safe_link $gemfile Gemfile
+  safe_link $gemfile.lock Gemfile.lock
+
+  echo $gemfile > $env_dir/_ORIGINAL_BUNDLE_GEMFILE
+fi

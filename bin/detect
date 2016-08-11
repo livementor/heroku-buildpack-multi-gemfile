@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# this buildpack is always enabled
+echo "Multi Gemfile"
+exit 0
